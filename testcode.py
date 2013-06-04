@@ -15,7 +15,7 @@ def en_time(sttime):
    return (entime - sttime)
 
 #set initial variables
-N =  3 #10**4
+N = 10**4
 KT = np.random.rand(1,N)
 LT = np.random.rand(1,N)
 KTT = 0.1 + 1.2*KT + 0.2*LT + (1 - 2*np.random.rand(1,N))*0.05
