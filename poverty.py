@@ -23,8 +23,11 @@ nthe = 3 # of theta_i (inidividual prod)
 neta = 3 # of theta (aggeregate prod)
 na = 3 # of asset (non-productive)
 nk = 3 # of productive capital
-npa = 3 # of asset price
+#asset a is a numeraire then replaced with consumption goods price
+#npa = 3 # of asset price
+npc = 3 # of consumption goods price
 npk = 3 # of capital price
+ntech = 2 # of production technologies
 
 # ===Model Functions===
 
@@ -43,29 +46,47 @@ def get2argmax(m):
     return [a,b]
 
 #Value iteration
-def itervalue():
-    retargset = zeros((nthe,neta,na,nk,npa,npk))
+def itervalue(next_ev):
+    retargset = zeros((nthe,neta,na,nk,npc,npk,ntech))
     #calc value in each asset and capital
-    bufmat = zeros((nthe,neta,na,nk,npa,npk,na,nk))
+    bufmat = zeros((nthe,neta,na,nk,npc,npk,ntech,na,nk))
     for the_i in xrange(nthe):
         for eta_i in xrange(neta):
             for a_i in xrange(na):
                 for k_i in xrange(nk):
-                    for a_j in xrange(na):
-                        for k_j in xrange(nk):
-                            #Should he choose production?
-                            consp = ***
-                            next_ev = *** #there is the transition
-                            bufmat[the_i,eta_i,a_i,k_i,a_j,k_j] = u(consp) + beta * next_ev
+                    for pc_i in xrange(npc):
+                        for pk_i in xrange(npk):
+                            for a_j in xrange(na):
+                                for k_j in xrange(nk):
+                                    #Should he choose production?: NO
+                                    consp_h = eta_i * f_h() + (1 - delta)*(1/pc_i)*a_i \
+                                        - (1/pc_i)*a_j - (pk_i/pc_i)*k_j
+                                    consp_l = eta_i * f_l() + (1 - delta)*(1/pc_i)*a_i \
+                                        - (1/pc_i)*a_j - (pk_i/pc_i)*k_j
+                                    #next_ev = *** #there is the transition
+                                    #given from previous iteration
+                                    bufmat[the_i,eta_i,a_i,k_i,pc_i,pk_i,0,a_j,k_j] =\
+                                        u(consp_h) + beta * getexp(next_ev,
+                                    bufmat[the_i,eta_i,a_i,k_i,pc_i,pk_i,1,a_j,k_j] =\
+                                        u(consp_l) + beta * next_ev
     #decide amount of asset and capital
     for the_i in xrange(nthe):
         for eta_i in xrange(neta):
             for a_i in xrange(na):
                 for k_i in xrange(nk):
-                    retargset[the_i,eta_i,a_i,k_i] = get2argmax(bufmat[the_i,eta_i,a_i,k_i,:,:])
+                    for pc_i in xrange(npc):
+                        for pk_i in xrange(npk):
+                            retargset[the_i,eta_i,a_i,k_i,pc_i,pk_i,0] = \
+                                get2argmax(bufmat[the_i,eta_i,a_i,k_i,pc_i,pk_i,0,:,:])
+                            retargset[the_i,eta_i,a_i,k_i,pc_i,pk_i,1] = \
+                                get2argmax(bufmat[the_i,eta_i,a_i,k_i,pc_i,pk_i,1,:,:])
     return retargset
 
+#Doesn't the future value depend upon the futer prices?
+def getexp(vmat,the,eta,a,k,pc,pk,a,k
+
 #Simulation
+
 
 def getprice(priceset):
     pa,pc = priceset
@@ -117,11 +138,3 @@ for i in xrange(simt):
     eta = transeta(eta)
     for j in xrange(nagent):
         thetaset[j] = transtheta(thetaset[j])
-
-
-
-
-
-
-
-
